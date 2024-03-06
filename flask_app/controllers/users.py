@@ -68,7 +68,7 @@ def login():
         flash("Incorrect password", "passwordLogin")
         return redirect(request.referrer)
 
-    session["user_id"] = user["id"]
+    session["user_id"] = user["user_id"]
     return redirect("/")
 
 

@@ -11,6 +11,13 @@ def pizzas():
     return redirect("/")
 
 
+@app.route("/order")
+def order():
+    if "user_id" in session:
+        return render_template("order.html")
+    return redirect("/")
+
+
 @app.route("/pizzas/new")
 def addPizza():
     if "user_id" in session:
