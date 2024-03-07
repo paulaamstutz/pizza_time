@@ -1,4 +1,4 @@
-from flask import flash
+from datetime import datetime
 
 from flask_app.config.mysqlconnection import connectToMySQL
 
@@ -8,16 +8,20 @@ class Pizza:
 
     def __init__(self, data):
         self.id = data["pizza_id"]
-        self.title = data["method"]
-        self.description = data["size"]
-        self.nrOfPages = data["crust"]
-        self.price = data["quantity"]
+        self.method = data["method"]
+        self.size = data["size"]
+        self.crust = data["crust"]
+        self.quantity = data["quantity"]
+        self.toppings = data["toppings"]
         self.created_at = data["created_at"]
         self.updated_at = data["updated_at"]
 
     @classmethod
     def create(cls, data):
-        query = "INSERT INTO pizzas (method, size, crust, quantity, user_id) VALUES (%(method)s, %(size)s, %(crust)s, %(quantity)s, %(author)s, %(user_id)s);"
+        query = "INSERT INTO pizzas (method, size, crust, quantity, toppings, user_id) VALUES (%(method)s, %(size)s, %(crust)s, %(quantity)s, %(toppings)s, %(user_id)s);"
+        print("SQL Query:", query)
+        print("Data:", data)
+
         return connectToMySQL(cls.db_name).query_db(query, data)
 
     @classmethod
@@ -32,7 +36,7 @@ class Pizza:
 
     @classmethod
     def get_pizza_by_id(cls, data):
-        query = "SELECT * FROM pizzas LEFT JOIN users on pizzas.user_id = users.id WHERE pizzas.id = %(id)s;"
+        query = "SELECT * FROM pizzas WHERE id = %(id)s;"
         result = connectToMySQL(cls.db_name).query_db(query, data)
         return result
 
