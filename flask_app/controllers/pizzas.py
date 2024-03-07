@@ -21,32 +21,32 @@ def order():
 pizza_orders = []
 
 
-@app.route("/order", methods=["POST"])
-def create_pizza():
-    method = request.form.get("method")
-    crust = request.form.get("crust")
-    size = request.form.get("size")
-    quantity = request.form.get("quantity")
-    toppings = request.form.getlist("toppings")
+# @app.route("/order", methods=["POST"])
+# def create_pizza():
+#     method = request.form.get("method")
+#     crust = request.form.get("crust")
+#     size = request.form.get("size")
+#     quantity = request.form.get("quantity")
+#     toppings = request.form.getlist("toppings")
 
-    # Validate the form data (you can add more validation as needed)
-    if not method or not crust or not size or not quantity or not toppings:
-        flash("Please fill out all fields.", "error")
-        return redirect("/")
+#     # Validate the form data (you can add more validation as needed)
+#     if not method or not crust or not size or not quantity or not toppings:
+#         flash("Please fill out all fields.", "error")
+#         return redirect("/")
 
-    # Save the order to the mockup database (replace with actual database interaction)
-    pizza_order = {
-        "method": method,
-        "crust": crust,
-        "size": size,
-        "quantity": quantity,
-        "toppings": toppings,
-    }
-    pizza_orders.append(pizza_order)
+#     # Save the order to the mockup database (replace with actual database interaction)
+#     pizza_order = {
+#         "method": method,
+#         "crust": crust,
+#         "size": size,
+#         "quantity": quantity,
+#         "toppings": toppings,
+#     }
+#     pizza_orders.append(pizza_order)
 
-    flash("Pizza order created successfully!", "success")
-    # Redirect to the validation page
-    return redirect("pizza.html")
+#     flash("Pizza order created successfully!", "success")
+#     # Redirect to the validation page
+#     return redirect("pizza.html")
 
 
 @app.route("/pizza", methods=["POST"])
@@ -56,23 +56,25 @@ def validation_page():
     return render_template("pizza.html", order=last_order)
 
 
-"""@app.route("/order", methods=["POST"])
+@app.route("/order", methods=["POST"])
 def createPizza():
     if "user_id" not in session:
         return redirect("/")
-    if not Pizza.validate_pizza(request.form):
-        return redirect(request.referrer)
+    # if not Pizza.validate_pizza(request.form):
+    #     return redirect(request.referrer)
     data = {
         "method": request.form["method"],
         "size": request.form["size"],
         "crust": request.form["crust"],
         "quantity": request.form["quantity"],
-        "toppings": request.form["toppings"],
         "user_id": session["user_id"],  # id e personit te loguar
     }
-    Pizza.create(data)
-    return redirect("/")
-"""
+    id = Pizza.create(data)
+
+    dataTop = {"pizza_id": id, "toping": request.form["topping"]}
+    Pizza.addTopping(dataTop)
+
+    return redirect("/pizza")
 
 
 @app.route("/pizza/<int:id>")

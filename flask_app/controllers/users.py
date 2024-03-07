@@ -6,6 +6,11 @@ from flask_app.models.user import User
 
 bcrypt = Bcrypt(app)
 
+import paypalrestsdk
+
+ADMINEMAIL = "ardit.raseni@gmail.com"
+PASSWORD = "ardit12345"
+
 
 @app.route("/")
 def index():
@@ -118,3 +123,95 @@ def delete():
     data = {"id": session["user_id"]}
     User.delete(data)
     return redirect("/logout")
+
+
+@app.route("/checkout/paypal")
+def checkoutPaypal():
+    if "user_id" not in session:
+        return redirect("/")
+    takeout = 200
+    thick = 50
+    big = 100
+    quantity = 1
+    toppings = 100
+    totalPrice = round(takeout + thick + big + quantity + toppings)
+
+    try:
+        paypalrestsdk.configure(
+            {
+                "mode": "sandbox",  # Change this to "live" when you're ready to go live
+                "client_id": "AYckYn5asNG7rR9A2gycCw-N2Du3GXH4ytNfU5ueLeYKaUwjKFL-aZMu3owCwfs_D1fydp2W-HSVieZ0",
+                "client_secret": "EJu8H94UNn6b2Xigp26rf1pIs6NW-WrweGw-RkboWLUjWfHK2m46qrFObh_rL_HPSwvfipNyFoYdoa3K",
+            }
+        )
+
+        payment = paypalrestsdk.Payment(
+            {
+                "intent": "sale",
+                "payer": {"payment_method": "paypal"},
+                "transactions": [
+                    {
+                        "amount": {
+                            "total": totalPrice,
+                            "currency": "USD",  # Adjust based on your currency
+                        },
+                        "description": f"Total to pay for the pizza",
+                    }
+                ],
+                "redirect_urls": {
+                    "return_url": url_for(
+                        "paymentSuccess", _external=True, totalPrice=totalPrice
+                    ),
+                    "cancel_url": "http://example.com/cancel",
+                },
+            }
+        )
+
+        if payment.create():
+            approval_url = next(
+                link.href for link in payment.links if link.rel == "approval_url"
+            )
+            return redirect(approval_url)
+        else:
+            flash("Something went wrong with your payment", "creditCardDetails")
+            return redirect(request.referrer)
+    except paypalrestsdk.ResourceNotFound as e:
+        flash("Something went wrong with your payment", "creditCardDetails")
+        return redirect(request.referrer)
+
+
+@app.route("/success", methods=["GET"])
+def paymentSuccess():
+    payment_id = request.args.get("paymentId", "")
+    payer_id = request.args.get("PayerID", "")
+    try:
+        paypalrestsdk.configure(
+            {
+                "mode": "sandbox",  # Change this to "live" when you're ready to go live
+                "client_id": "AYckYn5asNG7rR9A2gycCw-N2Du3GXH4ytNfU5ueLeYKaUwjKFL-aZMu3owCwfs_D1fydp2W-HSVieZ0",
+                "client_secret": "EJu8H94UNn6b2Xigp26rf1pIs6NW-WrweGw-RkboWLUjWfHK2m46qrFObh_rL_HPSwvfipNyFoYdoa3K",
+            }
+        )
+        payment = paypalrestsdk.Payment.find(payment_id)
+        if payment.execute({"payer_id": payer_id}):
+
+            ammount = request.args.get("totalPrice")
+            status = "Paid"
+            user_id = session["user_id"]
+            data = {"ammount": ammount, "status": status, "user_id": user_id}
+            User.createPayment(data)
+
+            flash("Your payment was successful!", "paymentSuccessful")
+            return redirect("/pizzas")
+        else:
+            flash("Something went wrong with your payment", "paymentNotSuccessful")
+            return redirect("/")
+    except paypalrestsdk.ResourceNotFound as e:
+        flash("Something went wrong with your payment", "paymentNotSuccessful")
+        return redirect("/pizzas")
+
+
+@app.route("/cancel", methods=["GET"])
+def paymentCancel():
+    flash("Payment was canceled", "paymentCanceled")
+    return redirect("/pizzas")

@@ -75,6 +75,9 @@ class User:
         if len(user["password"]) < 1:
             flash("Password is required!", "passwordRegister")
             is_valid = False
+        if user["password"] != user["confirm_password"]:
+            flash("Passwords do not match!", "confirm_passwordRegister")
+            is_valid = False
         if len(user["first_name"]) < 1:
             flash("First name is required!", "nameRegister")
             is_valid = False

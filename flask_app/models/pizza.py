@@ -18,10 +18,7 @@ class Pizza:
 
     @classmethod
     def create(cls, data):
-        query = "INSERT INTO pizzas (method, size, crust, quantity, toppings, user_id) VALUES (%(method)s, %(size)s, %(crust)s, %(quantity)s, %(toppings)s, %(user_id)s);"
-        print("SQL Query:", query)
-        print("Data:", data)
-
+        query = "INSERT INTO pizzas (method, size, crust, quantity, user_id) VALUES (%(method)s, %(size)s, %(crust)s, %(quantity)s, %(user_id)s);"
         return connectToMySQL(cls.db_name).query_db(query, data)
 
     @classmethod
@@ -43,4 +40,9 @@ class Pizza:
     @classmethod
     def delete(cls, data):
         query = "DELETE FROM pizzas where id = %(id)s;"
+        return connectToMySQL(cls.db_name).query_db(query, data)
+
+    @classmethod
+    def addTopping(cls, data):
+        query = "INSERT INTO pizzatoppings (pizza_id, toping) VALUES (%(pizza_id)s, %(toping)s);"
         return connectToMySQL(cls.db_name).query_db(query, data)
