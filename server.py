@@ -1,9 +1,9 @@
 from flask_app import app
 
 # import our controllers
-from flask_app.controllers import pizzas, users
+from flask_app.controllers import admin, pizzas, users
 
-pizza_orders = []
+# pizza_orders = []
 
 if (
     __name__ == "__main__"

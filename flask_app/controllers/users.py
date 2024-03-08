@@ -1,4 +1,7 @@
-from flask import flash, redirect, render_template, request, session
+import math
+import random
+
+from flask import flash, redirect, render_template, request, session, url_for
 from flask_bcrypt import Bcrypt
 
 from flask_app import app

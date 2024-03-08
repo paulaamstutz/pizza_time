@@ -24,15 +24,20 @@ class Admin:
 
     @classmethod
     def get_admin_by_email(cls, data):
-        query = "SELECT * FROM admin where email = %(email)s;"
+        query = "SELECT * FROM admins where email = %(email)s;"
         result = connectToMySQL(cls.db_name).query_db(query, data)
         if result:
             return result[0]
         return False
 
     @classmethod
+    def create(cls, data):
+        query = "INSERT INTO admins (first_name, last_name, email, password) VALUES (%(first_name)s, %(last_name)s, %(email)s,%(password)s);"
+        return connectToMySQL(cls.db_name).query_db(query, data)
+
+    @classmethod
     def get_admin_by_id(cls, data):
-        query = "SELECT * FROM admin where id = %(id)s;"
+        query = "SELECT * FROM admins where id = %(admin_id)s;"
         result = connectToMySQL(cls.db_name).query_db(query, data)
         if result:
             return result[0]
@@ -44,7 +49,25 @@ class Admin:
         if not EMAIL_REGEX.match(user["email"]):
             flash("Invalid email address!", "emailLoginAdmin")
             is_valid = False
+
         if len(user["password"]) < 1:
             flash("Password is required!", "passwordLoginAdmin")
+            is_valid = False
+        return is_valid
+
+    @staticmethod
+    def validate_userRegister(user):
+        is_valid = True
+        if not EMAIL_REGEX.match(user["email"]):
+            flash("Invalid email address!", "emailRegisterAdmin")
+            is_valid = False
+        if len(user["password"]) < 1:
+            flash("Password is required!", "passwordRegisterAdmin")
+            is_valid = False
+        if len(user["first_name"]) < 1:
+            flash("First name is required!", "nameRegisterAdmin")
+            is_valid = False
+        if len(user["last_name"]) < 1:
+            flash("Last name is required!", "last_nameRegisterAdmin")
             is_valid = False
         return is_valid

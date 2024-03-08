@@ -1,0 +1,40 @@
+<!-- Inside your templates folder -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Registration</title>
+</head>
+<body>
+    <h1>Admin Registration</h1>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="flash-messages">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <form method="post" action="{{ url_for('registerAdmin') }}">
+        <label for="first_name">First Name:</label>
+        <input type="text" name="first_name" required>
+
+        <label for="last_name">Last Name:</label>
+        <input type="text" name="last_name" required>
+
+        <label for="email">Email:</label>
+        <input type="email" name="email" required>
+
+        <label for="password">Password:</label>
+        <input type="password" name="password" required>
+
+        <button type="submit">Register</button>
+    </form>
+
+    <p>Already have an account? <a href="{{ url_for('loginPageAdmin') }}">Login here</a>.</p>
+</body>
+</html>

@@ -78,7 +78,7 @@ def createPizza():
 
 
 @app.route("/pizza/<int:id>")
-def viewpizza(id):
+def viewPizza(id):
     if "user_id" not in session:
         return redirect("/")
     data = {"id": id, "pizza_id": id}
@@ -87,7 +87,7 @@ def viewpizza(id):
 
 
 @app.route("/pizza/delete/<int:id>")
-def deletepizza(id):
+def deletePizza(id):
     if "user_id" not in session:
         return redirect("/")
     data = {

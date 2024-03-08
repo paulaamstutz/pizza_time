@@ -44,5 +44,5 @@ class Pizza:
 
     @classmethod
     def addTopping(cls, data):
-        query = "INSERT INTO pizzatoppings (pizza_id, toping) VALUES (%(pizza_id)s, %(toping)s);"
+        query = "INSERT INTO pizzatoppings (pizza_id, topping_id) VALUES (%(pizza_id)s, %(topping_id)s);"
         return connectToMySQL(cls.db_name).query_db(query, data)
